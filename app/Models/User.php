@@ -43,7 +43,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'admin_status' => 'boolean',
     ];
-    
+
     public function applications()
     {
         return $this->hasMany(Application::class);
@@ -52,5 +52,26 @@ class User extends Authenticatable
     public function attendanceRecords()
     {
         return $this->hasMany(AttendanceRecord::class);
+    }
+
+    public function getAttendanceStatusAttribute()
+    {
+        $record = $this->attendanceRecords()
+            ->where('date', today()->toDateString())
+            ->first();
+
+        if (! $record) {
+            return '勤務外';
+        }
+
+        if ($record->clock_out) {
+            return '退勤済';
+        }
+
+        if ($record->breaks()->whereNull('break_out')->exists()) {
+            return '休憩中';
+        }
+
+        return '出勤中';
     }
 }

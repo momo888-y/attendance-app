@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,3 +26,5 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
+
+Route::get('/attendance', [AttendanceController::class, 'index'])->middleware('auth');
