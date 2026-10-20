@@ -75,10 +75,6 @@ return [
 
     'home' => '/attendance',
 
-    'redirects' => [
-        'logout' => '/login',
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Fortify Routes Prefix / Subdomain
