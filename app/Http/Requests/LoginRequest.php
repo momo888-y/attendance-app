@@ -1,17 +1,37 @@
 <?php
 
-namespace App\Http\Responses;
+namespace App\Http\Requests;
 
-use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 
-class LoginResponse implements LoginResponseContract
+class LoginRequest extends FortifyLoginRequest
 {
-    public function toResponse($request)
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
     {
-        if ($request->user()->admin_status) {
-            return redirect('/admin/attendance/list');
-        }
+        return true;
+    }
 
-        return redirect('/attendance');
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'email' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'メールアドレスを入力してください',
+            'password.required' => 'パスワードを入力してください',
+        ];
     }
 }
