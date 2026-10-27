@@ -119,8 +119,20 @@ class AttendanceController extends Controller
             ->where('approval_status', '承認待ち')
             ->first();
 
+        if ($application) {
+            $clockIn = $application->new_clock_in;
+            $clockOut = $application->new_clock_out;
+            $comment = $application->comment;
+            $breakItems = $application->proposalBreaks;
+        } else {
+            $clockIn = $record->clock_in;
+            $clockOut = $record->clock_out;
+            $comment = $record->comment;
+            $breakItems = $record->breaks;
+        }
+
         $breaks = [];
-        foreach ($record->breaks as $break) {
+        foreach ($breakItems as $break) {
             $breaks[] = [
                 'break_in' => Carbon::parse($break->break_in)->format('H:i'),
                 'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
@@ -134,10 +146,10 @@ class AttendanceController extends Controller
             'application' => $application,
             'year' => $date->format('Y年'),
             'date' => $date->format('n月j日'),
-            'clock_in' => Carbon::parse($record->clock_in)->format('H:i'),
-            'clock_out' => $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+            'clock_in' => Carbon::parse($clockIn)->format('H:i'),
+            'clock_out' => $clockOut ? Carbon::parse($clockOut)->format('H:i') : '',
             'breaks' => $breaks,
-            'comment' => $record->comment,
+            'comment' => $comment,
         ];
 
         return view('user.user-detail', compact('user', 'data'));
