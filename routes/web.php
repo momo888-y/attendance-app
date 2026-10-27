@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ApplicationController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
@@ -32,3 +33,4 @@ Route::get('/attendance', [AttendanceController::class, 'index'])->middleware('a
 Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('auth');
 Route::get('/attendance/list', [AttendanceController::class, 'list'])->middleware('auth');
 Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->middleware('auth');
+Route::post('/attendance/{id}', [ApplicationController::class, 'store'])->middleware('auth');
