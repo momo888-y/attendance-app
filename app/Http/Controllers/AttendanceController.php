@@ -106,4 +106,40 @@ class AttendanceController extends Controller
 
         return view('user.user-attendance-list', compact('date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
     }
+
+    public function show($id)
+    {
+        $user = Auth::user();
+
+        $record = $user->attendanceRecords()
+            ->with('breaks')
+            ->findOrFail($id);
+
+        $application = $record->applications()
+            ->where('approval_status', '承認待ち')
+            ->first();
+
+        $breaks = [];
+        foreach ($record->breaks as $break) {
+            $breaks[] = [
+                'break_in' => Carbon::parse($break->break_in)->format('H:i'),
+                'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
+            ];
+        }
+
+        $date = Carbon::parse($record->date);
+
+        $data = [
+            'id' => $record->id,
+            'application' => $application,
+            'year' => $date->format('Y年'),
+            'date' => $date->format('n月j日'),
+            'clock_in' => Carbon::parse($record->clock_in)->format('H:i'),
+            'clock_out' => $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+            'breaks' => $breaks,
+            'comment' => $record->comment,
+        ];
+
+        return view('user.user-detail', compact('user', 'data'));
+    }
 }

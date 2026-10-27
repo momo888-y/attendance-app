@@ -31,3 +31,4 @@ Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::get('/attendance', [AttendanceController::class, 'index'])->middleware('auth');
 Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('auth');
 Route::get('/attendance/list', [AttendanceController::class, 'list'])->middleware('auth');
+Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->middleware('auth');
