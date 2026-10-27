@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,7 +18,6 @@ use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('auth');
 
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', function () {
@@ -29,3 +29,5 @@ Route::middleware('guest')->group(function () {
 Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
 
 Route::get('/attendance', [AttendanceController::class, 'index'])->middleware('auth');
+Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('auth');
+Route::get('/attendance/list', [AttendanceController::class, 'list'])->middleware('auth');
