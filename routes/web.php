@@ -17,6 +17,7 @@ use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('auth');
 
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', function () {
