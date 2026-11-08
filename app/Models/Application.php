@@ -31,7 +31,7 @@ class Application extends Model
 
     public function AttendanceRecord()
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsTo(AttendanceRecord::class);
     }
 
     public function proposalBreaks()

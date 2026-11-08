@@ -16,6 +16,14 @@ class ApplicationController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->admin_status) {
+            $applications = Application::with(['user', 'AttendanceRecord'])
+                ->latest()
+                ->get();
+
+            return view('admin.admin-application-list', compact('applications'));
+        }
+
         $applications = $user->applications()
             ->latest()
             ->get();
