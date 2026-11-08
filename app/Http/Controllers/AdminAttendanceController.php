@@ -23,4 +23,11 @@ class AdminAttendanceController extends Controller
 
         return view('admin.admin-attendance-list', compact('date', 'previousDay', 'nextDay', 'users', 'attendanceRecords'));
     }
+
+    public function staffList()
+    {
+        $users = User::where('admin_status', false)->get();
+
+        return view('admin.staff-list', compact('users'));
+    }
 }
