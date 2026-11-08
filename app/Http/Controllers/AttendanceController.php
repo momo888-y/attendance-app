@@ -111,6 +111,34 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->admin_status) {
+            $record = AttendanceRecord::with(['breaks', 'user'])->findOrFail($id);
+
+            $breaks = [];
+            foreach ($record->breaks as $break) {
+                $breaks[] = [
+                    'break_in' => Carbon::parse($break->break_in)->format('H:i'),
+                    'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
+                ];
+            }
+
+            $date = Carbon::parse($record->date);
+
+            $attendanceRecord = [
+                'id' => $record->id,
+                'year' => $date->format('Y年'),
+                'date' => $date->format('n月j日'),
+                'clock_in' => Carbon::parse($record->clock_in)->format('H:i'),
+                'clock_out' => $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+                'breaks' => $breaks,
+                'comment' => $record->comment,
+            ];
+
+            $user = $record->user;
+
+            return view('admin.admin-detail', compact('user', 'attendanceRecord'));
+        }
+
         $record = $user->attendanceRecords()
             ->with('breaks')
             ->findOrFail($id);
