@@ -38,4 +38,14 @@ class Application extends Model
     {
         return $this->hasMany(ProposalBreak::class);
     }
+
+    public function getNewClockInAttribute($value)
+    {
+        return $value ? \Carbon\Carbon::parse($value)->format('H:i') : null;
+    }
+
+    public function getNewClockOutAttribute($value)
+    {
+        return $value ? \Carbon\Carbon::parse($value)->format('H:i') : null;
+    }
 }

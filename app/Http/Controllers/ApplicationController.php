@@ -105,4 +105,42 @@ class ApplicationController extends Controller
 
         return redirect('/attendance/' . $application->attendance_record_id);
     }
+
+    public function approveShow($attendance_correct_request_id)
+    {
+        $application = Application::with(['user', 'proposalBreaks'])
+            ->findOrFail($attendance_correct_request_id);
+
+        $user = $application->user;
+
+        return view('admin.admin-application-detail', compact('application', 'user'));
+    }
+
+    public function approve($attendance_correct_request_id)
+    {
+        $application = Application::with(['AttendanceRecord', 'proposalBreaks'])
+            ->findOrFail($attendance_correct_request_id);
+
+        $record = $application->AttendanceRecord;
+
+        $record->update([
+            'clock_in' => $application->new_clock_in,
+            'clock_out' => $application->new_clock_out,
+            'comment' => $application->comment,
+        ]);
+
+        $record->breaks()->delete();
+
+        foreach ($application->proposalBreaks as $proposalBreak) {
+            AttendanceBreak::create([
+                'attendance_record_id' => $record->id,
+                'break_in' => $proposalBreak->break_in,
+                'break_out' => $proposalBreak->break_out,
+            ]);
+        }
+
+        $application->update(['approval_status' => '承認済み']);
+
+        return redirect('/stamp_correction_request/approve/' . $application->id);
+    }
 }
