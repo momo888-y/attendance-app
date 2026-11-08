@@ -6,9 +6,32 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ApplicationRequest;
 use App\Models\Application;
 use App\Models\ProposalBreak;
+use Carbon\Carbon;
 
 class ApplicationController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+
+        $applications = $user->applications()
+            ->latest()
+            ->get();
+
+        $formattedApplications = [];
+        foreach ($applications as $application) {
+            $formattedApplications[] = [
+                'id' => $application->id,
+                'approval_status' => $application->approval_status,
+                'date' => $application->new_date->format('Y/m/d'),
+                'comment' => $application->comment,
+                'application_date' => Carbon::parse($application->application_date)->format('Y/m/d'),
+            ];
+        }
+
+        return view('user.user-application-list', compact('user', 'formattedApplications'));
+    }
+
     public function store(ApplicationRequest $request, $id)
     {
         $user = Auth::user();

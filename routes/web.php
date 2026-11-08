@@ -34,3 +34,4 @@ Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('
 Route::get('/attendance/list', [AttendanceController::class, 'list'])->middleware('auth');
 Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->middleware('auth');
 Route::post('/attendance/{id}', [ApplicationController::class, 'store'])->middleware('auth');
+Route::get('/stamp_correction_request/list', [ApplicationController::class, 'index'])->middleware('auth');
