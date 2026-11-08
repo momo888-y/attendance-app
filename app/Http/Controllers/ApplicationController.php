@@ -62,4 +62,11 @@ class ApplicationController extends Controller
 
         return redirect('/attendance/' . $record->id);
     }
+
+    public function show($id)
+    {
+        $application = Auth::user()->applications()->findOrFail($id);
+
+        return redirect('/attendance/' . $application->attendance_record_id);
+    }
 }
