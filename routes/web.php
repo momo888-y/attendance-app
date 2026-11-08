@@ -4,6 +4,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ApplicationController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\AdminAttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,3 +37,5 @@ Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->middlewar
 Route::post('/attendance/{id}', [ApplicationController::class, 'store'])->middleware('auth');
 Route::get('/stamp_correction_request/list', [ApplicationController::class, 'index'])->middleware('auth');
 Route::get('/application/{id}', [ApplicationController::class, 'show'])->middleware('auth');
+Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->middleware('auth');
+Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->middleware(['auth', 'admin']);

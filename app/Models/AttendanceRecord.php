@@ -31,4 +31,30 @@ class AttendanceRecord extends Model
     {
         return $this->hasMany(Application::class);
     }
+
+    public function getTotalBreakTimeAttribute()
+    {
+        $minutes = 0;
+        foreach ($this->breaks as $break) {
+            if ($break->break_out) {
+                $minutes += \Carbon\Carbon::parse($break->break_in)->diffInMinutes(\Carbon\Carbon::parse($break->break_out));
+            }
+        }
+
+        return sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60);
+    }
+
+    public function getTotalTimeAttribute()
+    {
+        if (! $this->clock_out) {
+            return null;
+        }
+
+        [$hours, $minutes] = explode(':', $this->total_break_time);
+        $breakMinutes = $hours * 60 + $minutes;
+
+        $workMinutes = \Carbon\Carbon::parse($this->clock_in)->diffInMinutes(\Carbon\Carbon::parse($this->clock_out)) - $breakMinutes;
+
+        return sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60);
+    }
 }
