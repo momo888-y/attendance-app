@@ -5,12 +5,21 @@ namespace Tests\Feature\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\AttendanceRecord;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AttendanceIndexTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // テスト中の「現在時刻」を 2026年6月10日(水) 09:00 に固定する
+        $this->travelTo(Carbon::create(2026, 6, 10, 9, 0, 0));
+    }
 
     public function test_現在の日時情報がUIと同じ形式で出力されている(): void
     {

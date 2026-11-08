@@ -11,6 +11,14 @@ class BreakTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // テスト中の「現在時刻」を 2026年6月10日(水) 09:00 に固定する
+        $this->travelTo(Carbon::create(2026, 6, 10, 9, 0, 0));
+    }
+
     public function test_休憩ボタンが正しく機能する(): void
     {
         $user = $this->createUser();
@@ -100,7 +108,10 @@ class BreakTest extends TestCase
             'clock_out' => null,
         ]);
 
+        // 12:00 に休憩入 → 45分後（12:45）に休憩戻
+        $this->travelTo(Carbon::create(2026, 6, 10, 12, 0, 0));
         $this->actingAs($user)->post('/attendance', ['action' => 'break_in']);
+        $this->travel(45)->minutes();
         $this->actingAs($user)->post('/attendance', ['action' => 'break_out']);
 
         $record = AttendanceRecord::where('user_id', $user->id)

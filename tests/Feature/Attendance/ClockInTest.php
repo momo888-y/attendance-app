@@ -11,6 +11,14 @@ class ClockInTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // テスト中の「現在時刻」を 2026年6月10日(水) 09:00 に固定する
+        $this->travelTo(Carbon::create(2026, 6, 10, 9, 0, 0));
+    }
+
     public function test_出勤ボタンが正しく機能する(): void
     {
         $user = $this->createUser();
