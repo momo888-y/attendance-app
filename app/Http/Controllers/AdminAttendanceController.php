@@ -30,4 +30,36 @@ class AdminAttendanceController extends Controller
 
         return view('admin.staff-list', compact('users'));
     }
+
+    public function staffAttendance(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $date = Carbon::parse($request->input('date', now()->format('Y-m')))->startOfMonth();
+        $previousMonth = $date->copy()->subMonth()->format('Y-m');
+        $nextMonth = $date->copy()->addMonth()->format('Y-m');
+
+        $attendanceRecords = $user->attendanceRecords()
+            ->with('breaks')
+            ->whereBetween('date', [$date->toDateString(), $date->copy()->endOfMonth()->toDateString()])
+            ->get()
+            ->keyBy('date');
+
+        $formattedAttendanceRecords = [];
+
+        foreach (\Carbon\CarbonPeriod::create($date, $date->copy()->endOfMonth()) as $day) {
+            $record = $attendanceRecords->get($day->toDateString());
+
+            $formattedAttendanceRecords[] = [
+                'id' => $record ? $record->id : null,
+                'date' => $day->isoFormat('MM/DD(ddd)'),
+                'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
+                'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+                'total_break_time' => $record ? $record->total_break_time : null,
+                'total_time' => $record ? $record->total_time : null,
+            ];
+        }
+
+        return view('admin.staff-attendance-list', compact('user', 'date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
+    }
 }

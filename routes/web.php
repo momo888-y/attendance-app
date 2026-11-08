@@ -39,4 +39,6 @@ Route::get('/stamp_correction_request/list', [ApplicationController::class, 'ind
 Route::get('/application/{id}', [ApplicationController::class, 'show'])->middleware('auth');
 Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->middleware('auth');
 Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->middleware(['auth', 'admin']);
+Route::get('/admin/attendance/staff/{id}', [AdminAttendanceController::class, 'staffAttendance'])->middleware(['auth', 'admin']);
 Route::get('/admin/staff/list', [AdminAttendanceController::class, 'staffList'])->middleware(['auth', 'admin']);
+Route::get('/admin/attendance/staff/{id}', [AdminAttendanceController::class, 'staffAttendance'])->middleware(['auth', 'admin']);
