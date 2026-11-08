@@ -7,6 +7,8 @@ use App\Http\Requests\ApplicationRequest;
 use App\Models\Application;
 use App\Models\ProposalBreak;
 use Carbon\Carbon;
+use App\Models\AttendanceRecord;
+use App\Models\AttendanceBreak;
 
 class ApplicationController extends Controller
 {
@@ -35,6 +37,32 @@ class ApplicationController extends Controller
     public function store(ApplicationRequest $request, $id)
     {
         $user = Auth::user();
+
+        if ($user->admin_status) {
+            $record = AttendanceRecord::findOrFail($id);
+
+            $record->update([
+                'clock_in' => $request->input('new_clock_in'),
+                'clock_out' => $request->input('new_clock_out'),
+                'comment' => $request->input('comment'),
+            ]);
+
+            $record->breaks()->delete();
+
+            foreach ($request->input('new_break_in', []) as $index => $breakIn) {
+                if (! $breakIn) {
+                    continue;
+                }
+
+                AttendanceBreak::create([
+                    'attendance_record_id' => $record->id,
+                    'break_in' => $breakIn,
+                    'break_out' => $request->input('new_break_out.' . $index),
+                ]);
+            }
+
+            return redirect('/attendance/' . $record->id);
+        }
 
         $record = $user->attendanceRecords()->findOrFail($id);
 
