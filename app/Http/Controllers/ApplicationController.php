@@ -31,20 +31,16 @@ class ApplicationController extends Controller
             return view('admin.admin-application-list', compact('applications'));
         }
 
-        $applications = $user->applications()
+        $formattedApplications = $user->applications()
             ->latest()
-            ->get();
-
-        $formattedApplications = [];
-        foreach ($applications as $application) {
-            $formattedApplications[] = [
+            ->get()
+            ->map(fn($application) => [
                 'id' => $application->id,
                 'approval_status' => $application->approval_status,
                 'date' => $application->new_date->format('Y/m/d'),
                 'comment' => $application->comment,
                 'application_date' => Carbon::parse($application->application_date)->format('Y/m/d'),
-            ];
-        }
+            ]);
 
         return view('user.user-application-list', compact('user', 'formattedApplications'));
     }
@@ -109,13 +105,12 @@ class ApplicationController extends Controller
 
         $record->breaks()->delete();
 
-        foreach ($application->proposalBreaks as $proposalBreak) {
-            AttendanceBreak::create([
-                'attendance_record_id' => $record->id,
+        $record->breaks()->createMany(
+            $application->proposalBreaks->map(fn($proposalBreak) => [
                 'break_in' => $proposalBreak->break_in,
                 'break_out' => $proposalBreak->break_out,
-            ]);
-        }
+            ])->all()
+        );
 
         $application->update(['approval_status' => Application::STATUS_APPROVED]);
 
