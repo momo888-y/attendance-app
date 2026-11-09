@@ -49,12 +49,9 @@ class AttendanceRecord extends Model
      */
     public function getTotalBreakTimeAttribute(): string
     {
-        $minutes = 0;
-        foreach ($this->breaks as $break) {
-            if ($break->break_out) {
-                $minutes += Carbon::parse($break->break_in)->diffInMinutes(Carbon::parse($break->break_out));
-            }
-        }
+        $minutes = $this->breaks
+            ->filter(fn($break) => $break->break_out)
+            ->sum(fn($break) => Carbon::parse($break->break_in)->diffInMinutes(Carbon::parse($break->break_out)));
 
         return sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60);
     }
