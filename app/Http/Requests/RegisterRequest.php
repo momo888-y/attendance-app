@@ -29,6 +29,11 @@ class RegisterRequest extends FormRequest
         ];
     }
 
+    /**
+     * 会員登録フォームのバリデーションエラー時の日本語メッセージを返す
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

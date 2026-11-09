@@ -12,7 +12,8 @@ use Laravel\Fortify\Contracts\CreatesNewUsers;
 class CreateNewUser implements CreatesNewUsers
 {
     /**
-     * Validate and create a newly registered user.
+     * 会員登録の入力をチェックし、問題なければ新しいユーザーを作成する
+     * （チェック内容とメッセージは RegisterRequest のものを使い回す）
      *
      * @param  array<string, string>  $input
      *

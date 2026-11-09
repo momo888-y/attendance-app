@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProposalBreak extends Model
 {
@@ -15,7 +16,10 @@ class ProposalBreak extends Model
         'break_out',
     ];
 
-    public function application()
+    /**
+     * この休憩（修正案）が属する修正申請を取得する
+     */
+    public function application(): BelongsTo
     {
         return $this->belongsTo(Application::class);
     }

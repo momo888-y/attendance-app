@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use App\Models\AttendanceRecord;
+use App\Models\Application;
 use App\Models\AttendanceBreak;
+use App\Models\AttendanceRecord;
+use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
-    public function index()
+    /**
+     * 打刻画面を表示する（今日の日付と現在時刻を渡す）
+     */
+    public function index(): View
     {
         $user = Auth::user();
         $formattedDate = now()->isoFormat('YYYY年M月D日(ddd)');
@@ -20,37 +27,56 @@ class AttendanceController extends Controller
         return view('user.attendance-register', compact('user', 'formattedDate', 'formattedTime'));
     }
 
-    public function store(Request $request)
+    /**
+     * 打刻する（出勤・休憩入・休憩戻・退勤のどれかを action で受け取る）
+     */
+    public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
+        $action = $request->input('action');
 
-        $record = $user->attendanceRecords()
-            ->where('date', today()->toDateString())
-            ->first();
-
-        if ($request->input('action') === 'clock_in') {
+        if ($action === 'clock_in') {
             AttendanceRecord::create([
                 'user_id' => $user->id,
                 'date' => today()->toDateString(),
                 'clock_in' => now()->format('H:i:s'),
             ]);
-        } elseif ($request->input('action') === 'break_in') {
+
+            return redirect('/attendance');
+        }
+
+        $record = $user->attendanceRecords()
+            ->where('date', today()->toDateString())
+            ->first();
+
+        if ($action === 'break_in') {
             AttendanceBreak::create([
                 'attendance_record_id' => $record->id,
                 'break_in' => now()->format('H:i:s'),
             ]);
-        } elseif ($request->input('action') === 'break_out') {
+
+            return redirect('/attendance');
+        }
+
+        if ($action === 'break_out') {
             $record->breaks()
                 ->whereNull('break_out')
                 ->update(['break_out' => now()->format('H:i:s')]);
-        } elseif ($request->input('action') === 'clock_out') {
+
+            return redirect('/attendance');
+        }
+
+        if ($action === 'clock_out') {
             $record->update(['clock_out' => now()->format('H:i:s')]);
         }
 
         return redirect('/attendance');
     }
 
-    public function list(Request $request)
+    /**
+     * 一般ユーザー用：指定した月（未指定なら今月）の自分の勤怠一覧を表示する
+     */
+    public function list(Request $request): View
     {
         $user = Auth::user();
 
@@ -107,57 +133,71 @@ class AttendanceController extends Controller
         return view('user.user-attendance-list', compact('date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
     }
 
-    public function show($id)
+    /**
+     * 勤怠詳細画面を表示する
+     * 管理者なら誰の勤怠でも、一般ユーザーなら自分の勤怠だけを表示する
+     */
+    public function show(string $id): View
     {
         $user = Auth::user();
 
         if ($user->admin_status) {
-            $record = AttendanceRecord::with(['breaks', 'user'])->findOrFail($id);
-
-            $breaks = [];
-            foreach ($record->breaks as $break) {
-                $breaks[] = [
-                    'break_in' => Carbon::parse($break->break_in)->format('H:i'),
-                    'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
-                ];
-            }
-
-            $date = Carbon::parse($record->date);
-
-            $attendanceRecord = [
-                'id' => $record->id,
-                'year' => $date->format('Y年'),
-                'date' => $date->format('n月j日'),
-                'clock_in' => Carbon::parse($record->clock_in)->format('H:i'),
-                'clock_out' => $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
-                'breaks' => $breaks,
-                'comment' => $record->comment,
-            ];
-
-            $user = $record->user;
-
-            return view('admin.admin-detail', compact('user', 'attendanceRecord'));
+            return $this->showForAdmin($id);
         }
 
+        return $this->showForUser($user, $id);
+    }
+
+    /**
+     * 管理者用：勤怠記録の内容をそのまま詳細画面に表示する
+     */
+    private function showForAdmin(string $id): View
+    {
+        $record = AttendanceRecord::with(['breaks', 'user'])->findOrFail($id);
+
+        $breaks = [];
+        foreach ($record->breaks as $break) {
+            $breaks[] = [
+                'break_in' => Carbon::parse($break->break_in)->format('H:i'),
+                'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
+            ];
+        }
+
+        $date = Carbon::parse($record->date);
+
+        $attendanceRecord = [
+            'id' => $record->id,
+            'year' => $date->format('Y年'),
+            'date' => $date->format('n月j日'),
+            'clock_in' => Carbon::parse($record->clock_in)->format('H:i'),
+            'clock_out' => $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+            'breaks' => $breaks,
+            'comment' => $record->comment,
+        ];
+
+        $user = $record->user;
+
+        return view('admin.admin-detail', compact('user', 'attendanceRecord'));
+    }
+
+    /**
+     * 一般ユーザー用：自分の勤怠詳細を表示する
+     * 承認待ちの申請があれば、勤怠記録ではなく申請中の内容を表示する
+     */
+    private function showForUser(User $user, string $id): View
+    {
         $record = $user->attendanceRecords()
             ->with('breaks')
             ->findOrFail($id);
 
         $application = $record->applications()
-            ->where('approval_status', '承認待ち')
+            ->where('approval_status', Application::STATUS_PENDING)
             ->first();
 
-        if ($application) {
-            $clockIn = $application->new_clock_in;
-            $clockOut = $application->new_clock_out;
-            $comment = $application->comment;
-            $breakItems = $application->proposalBreaks;
-        } else {
-            $clockIn = $record->clock_in;
-            $clockOut = $record->clock_out;
-            $comment = $record->comment;
-            $breakItems = $record->breaks;
-        }
+        $source = $application ?? $record;
+        $clockIn = $application ? $application->new_clock_in : $record->clock_in;
+        $clockOut = $application ? $application->new_clock_out : $record->clock_out;
+        $breakItems = $application ? $application->proposalBreaks : $record->breaks;
 
         $breaks = [];
         foreach ($breakItems as $break) {
@@ -177,7 +217,7 @@ class AttendanceController extends Controller
             'clock_in' => Carbon::parse($clockIn)->format('H:i'),
             'clock_out' => $clockOut ? Carbon::parse($clockOut)->format('H:i') : '',
             'breaks' => $breaks,
-            'comment' => $comment,
+            'comment' => $source->comment,
         ];
 
         return view('user.user-detail', compact('user', 'data'));

@@ -27,6 +27,11 @@ class LoginRequest extends FortifyLoginRequest
         ];
     }
 
+    /**
+     * ログインフォームのバリデーションエラー時の日本語メッセージを返す
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

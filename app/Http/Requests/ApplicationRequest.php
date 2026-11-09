@@ -6,12 +6,20 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ApplicationRequest extends FormRequest
 {
-    public function authorize()
+    /**
+     * このリクエストを許可するかどうか（ログイン確認はルートのミドルウェアで行うため常に許可）
+     */
+    public function authorize(): bool
     {
         return true;
     }
 
-    public function rules()
+    /**
+     * 勤怠修正フォームのバリデーションルールを返す
+     *
+     * @return array<string, array<int, string>>
+     */
+    public function rules(): array
     {
         return [
             'new_clock_in' => ['required', 'date_format:H:i', 'before:new_clock_out'],
@@ -22,7 +30,12 @@ class ApplicationRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    /**
+     * バリデーションエラー時の日本語メッセージを返す
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
     {
         return [
             'new_clock_in.required' => '出勤時間もしくは退勤時間が不適切な値です',

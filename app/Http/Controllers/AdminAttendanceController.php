@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\AttendanceRecord;
+use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 
 class AdminAttendanceController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * 管理者用：指定した日（未指定なら今日）の全スタッフの勤怠一覧を表示する
+     */
+    public function index(Request $request): View
     {
         $date = Carbon::parse($request->input('date', today()->toDateString()));
         $previousDay = $date->copy()->subDay()->format('Y-m-d');
@@ -24,14 +29,20 @@ class AdminAttendanceController extends Controller
         return view('admin.admin-attendance-list', compact('date', 'previousDay', 'nextDay', 'users', 'attendanceRecords'));
     }
 
-    public function staffList()
+    /**
+     * 管理者用：スタッフ（一般ユーザー）の一覧を表示する
+     */
+    public function staffList(): View
     {
         $users = User::where('admin_status', false)->get();
 
         return view('admin.staff-list', compact('users'));
     }
 
-    public function staffAttendance(Request $request, $id)
+    /**
+     * 管理者用：指定したスタッフの、指定した月（未指定なら今月）の勤怠一覧を表示する
+     */
+    public function staffAttendance(Request $request, string $id): View
     {
         $user = User::findOrFail($id);
 
@@ -47,7 +58,7 @@ class AdminAttendanceController extends Controller
 
         $formattedAttendanceRecords = [];
 
-        foreach (\Carbon\CarbonPeriod::create($date, $date->copy()->endOfMonth()) as $day) {
+        foreach (CarbonPeriod::create($date, $date->copy()->endOfMonth()) as $day) {
             $record = $attendanceRecords->get($day->toDateString());
 
             $formattedAttendanceRecords[] = [
