@@ -56,20 +56,19 @@ class AdminAttendanceController extends Controller
             ->get()
             ->keyBy('date');
 
-        $formattedAttendanceRecords = [];
+        $formattedAttendanceRecords = collect(CarbonPeriod::create($date, $date->copy()->endOfMonth()))
+            ->map(function ($day) use ($attendanceRecords) {
+                $record = $attendanceRecords->get($day->toDateString());
 
-        foreach (CarbonPeriod::create($date, $date->copy()->endOfMonth()) as $day) {
-            $record = $attendanceRecords->get($day->toDateString());
-
-            $formattedAttendanceRecords[] = [
-                'id' => $record ? $record->id : null,
-                'date' => $day->isoFormat('MM/DD(ddd)'),
-                'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
-                'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
-                'total_break_time' => $record ? $record->total_break_time : null,
-                'total_time' => $record ? $record->total_time : null,
-            ];
-        }
+                return [
+                    'id' => $record ? $record->id : null,
+                    'date' => $day->isoFormat('MM/DD(ddd)'),
+                    'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
+                    'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+                    'total_break_time' => $record ? $record->total_break_time : null,
+                    'total_time' => $record ? $record->total_time : null,
+                ];
+            });
 
         return view('admin.staff-attendance-list', compact('user', 'date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
     }
