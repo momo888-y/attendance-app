@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ApplicationRequest;
 use App\Models\Application;
-use App\Models\AttendanceBreak;
 use App\Models\AttendanceRecord;
-use App\Models\ProposalBreak;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -132,17 +130,7 @@ class ApplicationController extends Controller
 
         $record->breaks()->delete();
 
-        foreach ($request->input('new_break_in', []) as $index => $breakIn) {
-            if (! $breakIn) {
-                continue;
-            }
-
-            AttendanceBreak::create([
-                'attendance_record_id' => $record->id,
-                'break_in' => $breakIn,
-                'break_out' => $request->input('new_break_out.' . $index),
-            ]);
-        }
+        $record->breaks()->createMany($this->formatInputBreaks($request));
 
         return $record;
     }
@@ -165,18 +153,23 @@ class ApplicationController extends Controller
             'application_date' => today()->toDateString(),
         ]);
 
-        foreach ($request->input('new_break_in', []) as $index => $breakIn) {
-            if (! $breakIn) {
-                continue;
-            }
-
-            ProposalBreak::create([
-                'application_id' => $application->id,
-                'break_in' => $breakIn,
-                'break_out' => $request->input('new_break_out.' . $index),
-            ]);
-        }
+        $application->proposalBreaks()->createMany($this->formatInputBreaks($request));
 
         return $record;
+    }
+
+    /**
+     * フォームで入力された休憩のうち、開始時刻があるものだけを保存用の形にそろえる
+     */
+    private function formatInputBreaks(ApplicationRequest $request): array
+    {
+        return collect($request->input('new_break_in', []))
+            ->filter()
+            ->map(fn($breakIn, $index) => [
+                'break_in' => $breakIn,
+                'break_out' => $request->input('new_break_out.' . $index),
+            ])
+            ->values()
+            ->all();
     }
 }
