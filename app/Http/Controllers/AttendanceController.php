@@ -90,45 +90,19 @@ class AttendanceController extends Controller
             ->get()
             ->keyBy('date');
 
-        $formattedAttendanceRecords = [];
+        $formattedAttendanceRecords = collect(CarbonPeriod::create($date, $date->copy()->endOfMonth()))
+            ->map(function ($day) use ($attendanceRecords) {
+                $record = $attendanceRecords->get($day->toDateString());
 
-        foreach (CarbonPeriod::create($date, $date->copy()->endOfMonth()) as $day) {
-            $record = $attendanceRecords->get($day->toDateString());
-
-            if (! $record) {
-                $formattedAttendanceRecords[] = [
-                    'id' => null,
+                return [
+                    'id' => $record ? $record->id : null,
                     'date' => $day->isoFormat('MM/DD(ddd)'),
-                    'clock_in' => '',
-                    'clock_out' => '',
-                    'total_break_time' => null,
-                    'total_time' => null,
+                    'clock_in' => $record ? Carbon::parse($record->clock_in)->format('H:i') : '',
+                    'clock_out' => $record && $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+                    'total_break_time' => $record ? $record->total_break_time : null,
+                    'total_time' => $record ? $record->total_time : null,
                 ];
-                continue;
-            }
-
-            $breakMinutes = 0;
-            foreach ($record->breaks as $break) {
-                if ($break->break_out) {
-                    $breakMinutes += Carbon::parse($break->break_in)->diffInMinutes(Carbon::parse($break->break_out));
-                }
-            }
-
-            $totalTime = null;
-            if ($record->clock_out) {
-                $workMinutes = Carbon::parse($record->clock_in)->diffInMinutes(Carbon::parse($record->clock_out)) - $breakMinutes;
-                $totalTime = sprintf('%02d:%02d', intdiv($workMinutes, 60), $workMinutes % 60);
-            }
-
-            $formattedAttendanceRecords[] = [
-                'id' => $record->id,
-                'date' => $day->isoFormat('MM/DD(ddd)'),
-                'clock_in' => Carbon::parse($record->clock_in)->format('H:i'),
-                'clock_out' => $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
-                'total_break_time' => sprintf('%02d:%02d', intdiv($breakMinutes, 60), $breakMinutes % 60),
-                'total_time' => $totalTime,
-            ];
-        }
+            });
 
         return view('user.user-attendance-list', compact('date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
     }
