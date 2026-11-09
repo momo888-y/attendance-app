@@ -12,6 +12,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
 
 class AttendanceController extends Controller
 {
@@ -129,14 +130,6 @@ class AttendanceController extends Controller
     {
         $record = AttendanceRecord::with(['breaks', 'user'])->findOrFail($id);
 
-        $breaks = [];
-        foreach ($record->breaks as $break) {
-            $breaks[] = [
-                'break_in' => Carbon::parse($break->break_in)->format('H:i'),
-                'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
-            ];
-        }
-
         $date = Carbon::parse($record->date);
 
         $attendanceRecord = [
@@ -145,7 +138,7 @@ class AttendanceController extends Controller
             'date' => $date->format('n月j日'),
             'clock_in' => Carbon::parse($record->clock_in)->format('H:i'),
             'clock_out' => $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
-            'breaks' => $breaks,
+            'breaks' => $this->formatBreaks($record->breaks),
             'comment' => $record->comment,
         ];
 
@@ -173,14 +166,6 @@ class AttendanceController extends Controller
         $clockOut = $application ? $application->new_clock_out : $record->clock_out;
         $breakItems = $application ? $application->proposalBreaks : $record->breaks;
 
-        $breaks = [];
-        foreach ($breakItems as $break) {
-            $breaks[] = [
-                'break_in' => Carbon::parse($break->break_in)->format('H:i'),
-                'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
-            ];
-        }
-
         $date = Carbon::parse($record->date);
 
         $data = [
@@ -190,10 +175,21 @@ class AttendanceController extends Controller
             'date' => $date->format('n月j日'),
             'clock_in' => Carbon::parse($clockIn)->format('H:i'),
             'clock_out' => $clockOut ? Carbon::parse($clockOut)->format('H:i') : '',
-            'breaks' => $breaks,
+            'breaks' => $this->formatBreaks($breakItems),
             'comment' => $source->comment,
         ];
 
         return view('user.user-detail', compact('user', 'data'));
+    }
+
+    /**
+     * 休憩（breaks または proposal_breaks）を、詳細画面で使う「開始・終了」の形にそろえる
+     */
+    private function formatBreaks(Collection $breaks): array
+    {
+        return $breaks->map(fn($break) => [
+            'break_in' => Carbon::parse($break->break_in)->format('H:i'),
+            'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
+        ])->all();
     }
 }
