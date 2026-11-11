@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
-use App\Http\Controllers\AdminAttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,16 +30,15 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
 
-Route::get('/attendance', [AttendanceController::class, 'index'])->middleware('auth');
-Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('auth');
-Route::get('/attendance/list', [AttendanceController::class, 'list'])->middleware('auth');
-Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->middleware('auth');
-Route::post('/attendance/{id}', [ApplicationController::class, 'store'])->middleware('auth');
-Route::get('/stamp_correction_request/list', [ApplicationController::class, 'index'])->middleware('auth');
-Route::get('/application/{id}', [ApplicationController::class, 'show'])->middleware('auth');
-Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->middleware('auth');
+Route::get('/attendance', [AttendanceController::class, 'index'])->middleware(['auth', 'verified']);
+Route::post('/attendance', [AttendanceController::class, 'store'])->middleware(['auth', 'verified']);
+Route::get('/attendance/list', [AttendanceController::class, 'list'])->middleware(['auth', 'verified']);
+Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->middleware(['auth', 'verified']);
+Route::post('/attendance/{id}', [ApplicationController::class, 'store'])->middleware(['auth', 'verified']);
+Route::get('/stamp_correction_request/list', [ApplicationController::class, 'index'])->middleware(['auth', 'verified']);
+Route::get('/application/{id}', [ApplicationController::class, 'show'])->middleware(['auth', 'verified']);
+
 Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->middleware(['auth', 'admin']);
-Route::get('/admin/attendance/staff/{id}', [AdminAttendanceController::class, 'staffAttendance'])->middleware(['auth', 'admin']);
 Route::get('/admin/staff/list', [AdminAttendanceController::class, 'staffList'])->middleware(['auth', 'admin']);
 Route::get('/admin/attendance/staff/{id}', [AdminAttendanceController::class, 'staffAttendance'])->middleware(['auth', 'admin']);
 Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [ApplicationController::class, 'approveShow'])->middleware(['auth', 'admin']);
