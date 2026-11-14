@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\IndexAttendanceRecordRequest;
+use App\Http\Requests\Api\V1\StoreAttendanceRecordRequest;
+use App\Http\Requests\Api\V1\UpdateAttendanceRecordRequest;
 use App\Http\Resources\AttendanceRecordResource;
 use App\Models\AttendanceRecord;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class AttendanceRecordController extends Controller
 {
@@ -41,5 +45,43 @@ class AttendanceRecordController extends Controller
         $attendanceRecord->load(['user', 'breaks', 'applications']);
 
         return new AttendanceRecordResource($attendanceRecord);
+    }
+
+    /**
+     * トークンの持ち主の勤怠を新しく登録する（201 を返す）
+     */
+    public function store(StoreAttendanceRecordRequest $request): JsonResponse
+    {
+        $attendanceRecord = $request->user()->attendanceRecords()->create($request->validated());
+        $attendanceRecord->load(['user', 'breaks']);
+
+        return (new AttendanceRecordResource($attendanceRecord))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    /**
+     * 勤怠を更新する（本人か管理者だけ）
+     */
+    public function update(UpdateAttendanceRecordRequest $request, AttendanceRecord $attendanceRecord): AttendanceRecordResource
+    {
+        $this->authorize('update', $attendanceRecord);
+
+        $attendanceRecord->update($request->validated());
+        $attendanceRecord->load(['user', 'breaks']);
+
+        return new AttendanceRecordResource($attendanceRecord);
+    }
+
+    /**
+     * 勤怠を削除する（本人か管理者だけ。204 を返す）
+     */
+    public function destroy(AttendanceRecord $attendanceRecord): Response
+    {
+        $this->authorize('delete', $attendanceRecord);
+
+        $attendanceRecord->delete();
+
+        return response()->noContent();
     }
 }
