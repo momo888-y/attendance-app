@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
@@ -33,6 +34,7 @@ Route::post('/admin/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::get('/attendance', [AttendanceController::class, 'index'])->middleware(['auth', 'verified']);
 Route::post('/attendance', [AttendanceController::class, 'store'])->middleware(['auth', 'verified']);
 Route::get('/attendance/list', [AttendanceController::class, 'list'])->middleware(['auth', 'verified']);
+Route::get('/attendance/report', [ReportController::class, 'index'])->middleware(['auth', 'verified']);
 Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->middleware(['auth', 'verified']);
 Route::post('/attendance/{id}', [ApplicationController::class, 'store'])->middleware(['auth', 'verified']);
 Route::get('/stamp_correction_request/list', [ApplicationController::class, 'index'])->middleware(['auth', 'verified']);
