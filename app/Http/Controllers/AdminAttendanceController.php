@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminAttendanceController extends Controller
 {
@@ -50,13 +52,54 @@ class AdminAttendanceController extends Controller
         $previousMonth = $date->copy()->subMonth()->format('Y-m');
         $nextMonth = $date->copy()->addMonth()->format('Y-m');
 
+        $formattedAttendanceRecords = $this->formatMonthlyRecords($user, $date);
+
+        return view('admin.staff-attendance-list', compact('user', 'date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
+    }
+
+    /**
+     * 管理者用：指定したスタッフの、指定した月の勤怠を CSV でダウンロードする
+     */
+    public function export(Request $request): StreamedResponse
+    {
+        $user = User::findOrFail($request->input('user_id'));
+        $date = Carbon::parse($request->input('year_month'))->startOfMonth();
+
+        $rows = $this->formatMonthlyRecords($user, $date);
+        $fileName = $user->name . '_' . $date->format('Y-m') . '.csv';
+
+        return response()->streamDownload(function () use ($rows) {
+            $handle = fopen('php://output', 'w');
+
+            // Excel で開いたときに文字化けしないよう、先頭に BOM を付ける
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, ['日付', '出勤', '退勤', '休憩', '合計']);
+
+            $rows->each(fn($row) => fputcsv($handle, [
+                $row['date'],
+                $row['clock_in'],
+                $row['clock_out'],
+                $row['total_break_time'],
+                $row['total_time'],
+            ]));
+
+            fclose($handle);
+        }, $fileName, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    /**
+     * スタッフの1か月分の勤怠を、1日1行の形にそろえる（画面と CSV で共通）
+     */
+    private function formatMonthlyRecords(User $user, Carbon $date): Collection
+    {
         $attendanceRecords = $user->attendanceRecords()
             ->with('breaks')
             ->whereBetween('date', [$date->toDateString(), $date->copy()->endOfMonth()->toDateString()])
             ->get()
             ->keyBy('date');
 
-        $formattedAttendanceRecords = collect(CarbonPeriod::create($date, $date->copy()->endOfMonth()))
+        return collect(CarbonPeriod::create($date, $date->copy()->endOfMonth()))
             ->map(function ($day) use ($attendanceRecords) {
                 $record = $attendanceRecords->get($day->toDateString());
 
@@ -69,7 +112,5 @@ class AdminAttendanceController extends Controller
                     'total_time' => $record ? $record->total_time : null,
                 ];
             });
-
-        return view('admin.staff-attendance-list', compact('user', 'date', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
     }
 }

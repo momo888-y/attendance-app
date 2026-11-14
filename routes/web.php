@@ -43,3 +43,4 @@ Route::get('/admin/staff/list', [AdminAttendanceController::class, 'staffList'])
 Route::get('/admin/attendance/staff/{id}', [AdminAttendanceController::class, 'staffAttendance'])->middleware(['auth', 'admin']);
 Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [ApplicationController::class, 'approveShow'])->middleware(['auth', 'admin']);
 Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [ApplicationController::class, 'approve'])->middleware(['auth', 'admin']);
+Route::post('/export', [AdminAttendanceController::class, 'export'])->middleware(['auth', 'admin']);
