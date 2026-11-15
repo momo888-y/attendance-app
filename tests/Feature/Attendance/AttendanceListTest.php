@@ -80,7 +80,7 @@ class AttendanceListTest extends TestCase
         $index = $this->actingAs($user)->get('/attendance/list');
         $index->assertSee('前月');
 
-        $response = $this->actingAs($user)->get('/attendance/list?date=' . $previousMonth->format('Y-m'));
+        $response = $this->actingAs($user)->get('/attendance/list?date='.$previousMonth->format('Y-m'));
 
         $response->assertStatus(200);
         $response->assertSee($previousMonth->format('Y/m'));
@@ -101,7 +101,7 @@ class AttendanceListTest extends TestCase
         $index = $this->actingAs($user)->get('/attendance/list');
         $index->assertSee('翌月');
 
-        $response = $this->actingAs($user)->get('/attendance/list?date=' . $nextMonth->format('Y-m'));
+        $response = $this->actingAs($user)->get('/attendance/list?date='.$nextMonth->format('Y-m'));
 
         $response->assertStatus(200);
         $response->assertSee($nextMonth->format('Y/m'));
@@ -119,9 +119,9 @@ class AttendanceListTest extends TestCase
         ]);
 
         $list = $this->actingAs($user)->get('/attendance/list');
-        $list->assertSee('/attendance/' . $record->id, false);
+        $list->assertSee('/attendance/'.$record->id, false);
 
-        $response = $this->actingAs($user)->get('/attendance/' . $record->id);
+        $response = $this->actingAs($user)->get('/attendance/'.$record->id);
 
         $response->assertStatus(200);
     }

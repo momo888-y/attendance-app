@@ -41,7 +41,7 @@ class AttendanceRecordSeeder extends Seeder
 
         User::where('id', '!=', $reportUser->id)
             ->get()
-            ->each(fn($user) => $this->seedRandomUser($user));
+            ->each(fn ($user) => $this->seedRandomUser($user));
     }
 
     /**
@@ -54,14 +54,14 @@ class AttendanceRecordSeeder extends Seeder
         collect(range(1, self::PAST_MONTHS))
             ->each(function ($monthsAgo) use ($user, $thisMonth) {
                 $this->weekdaysOf($thisMonth->copy()->subMonths($monthsAgo), self::PAST_DAYS_PER_MONTH)
-                    ->each(fn($date) => $this->createRecord($user, $date, '09:00:00', '18:00:00'));
+                    ->each(fn ($date) => $this->createRecord($user, $date, '09:00:00', '18:00:00'));
             });
 
         $patterns = collect(self::CURRENT_MONTH_PATTERNS)
-            ->flatMap(fn($pattern) => array_fill(0, $pattern[2], [$pattern[0], $pattern[1]]));
+            ->flatMap(fn ($pattern) => array_fill(0, $pattern[2], [$pattern[0], $pattern[1]]));
 
         $this->weekdaysOf($thisMonth, $patterns->count())
-            ->each(fn($date, $index) => $this->createRecord($user, $date, $patterns[$index][0], $patterns[$index][1]));
+            ->each(fn ($date, $index) => $this->createRecord($user, $date, $patterns[$index][0], $patterns[$index][1]));
     }
 
     /**
@@ -70,7 +70,7 @@ class AttendanceRecordSeeder extends Seeder
     private function seedRandomUser(User $user): void
     {
         collect(CarbonPeriod::create(Carbon::today()->subMonthNoOverflow()->startOfMonth(), Carbon::yesterday()))
-            ->reject(fn($date) => $date->isWeekend())
+            ->reject(fn ($date) => $date->isWeekend())
             ->each(function ($date) use ($user) {
                 $attendanceRecord = AttendanceRecord::factory()->create([
                     'user_id' => $user->id,
@@ -89,7 +89,7 @@ class AttendanceRecordSeeder extends Seeder
     private function weekdaysOf(Carbon $month, int $count): Collection
     {
         return collect(CarbonPeriod::create($month->copy()->startOfMonth(), $month->copy()->endOfMonth()))
-            ->reject(fn($date) => $date->isWeekend())
+            ->reject(fn ($date) => $date->isWeekend())
             ->take($count)
             ->values();
     }

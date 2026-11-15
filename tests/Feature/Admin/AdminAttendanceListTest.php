@@ -83,7 +83,7 @@ class AdminAttendanceListTest extends TestCase
         $index = $this->actingAs($admin)->get('/admin/attendance/list');
         $index->assertSee('前日');
 
-        $response = $this->actingAs($admin)->get('/admin/attendance/list?date=' . $yesterday->toDateString());
+        $response = $this->actingAs($admin)->get('/admin/attendance/list?date='.$yesterday->toDateString());
 
         $response->assertStatus(200);
         $response->assertSee($yesterday->format('Y/m/d'));
@@ -106,7 +106,7 @@ class AdminAttendanceListTest extends TestCase
         $index = $this->actingAs($admin)->get('/admin/attendance/list');
         $index->assertSee('翌日');
 
-        $response = $this->actingAs($admin)->get('/admin/attendance/list?date=' . $tomorrow->toDateString());
+        $response = $this->actingAs($admin)->get('/admin/attendance/list?date='.$tomorrow->toDateString());
 
         $response->assertStatus(200);
         $response->assertSee($tomorrow->format('Y/m/d'));

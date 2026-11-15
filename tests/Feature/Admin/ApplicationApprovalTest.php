@@ -84,7 +84,7 @@ class ApplicationApprovalTest extends TestCase
             'break_out' => '13:00:00',
         ]);
 
-        $response = $this->actingAs($admin)->get('/stamp_correction_request/approve/' . $application->id);
+        $response = $this->actingAs($admin)->get('/stamp_correction_request/approve/'.$application->id);
 
         $response->assertStatus(200);
         $response->assertSee('スタッフP');
@@ -101,9 +101,9 @@ class ApplicationApprovalTest extends TestCase
         $user = $this->createUser(['name' => 'スタッフQ']);
         $application = $this->createCorrectionApplication($user, ['comment' => '承認処理確認']);
 
-        $response = $this->actingAs($admin)->post('/stamp_correction_request/approve/' . $application->id);
+        $response = $this->actingAs($admin)->post('/stamp_correction_request/approve/'.$application->id);
 
-        $response->assertRedirect('/stamp_correction_request/approve/' . $application->id);
+        $response->assertRedirect('/stamp_correction_request/approve/'.$application->id);
 
         $application->refresh();
         $this->assertSame('承認済み', $application->approval_status);

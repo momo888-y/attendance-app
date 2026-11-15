@@ -42,7 +42,7 @@ class AttendanceDetailTest extends TestCase
     {
         [$user, $record] = $this->createRecordWithBreak();
 
-        $response = $this->actingAs($user)->get('/attendance/' . $record->id);
+        $response = $this->actingAs($user)->get('/attendance/'.$record->id);
 
         $response->assertStatus(200);
         $response->assertSee('鈴木一郎');
@@ -52,7 +52,7 @@ class AttendanceDetailTest extends TestCase
     {
         [$user, $record] = $this->createRecordWithBreak();
 
-        $response = $this->actingAs($user)->get('/attendance/' . $record->id);
+        $response = $this->actingAs($user)->get('/attendance/'.$record->id);
 
         $response->assertStatus(200);
         $response->assertSee(today()->format('Y年'));
@@ -63,7 +63,7 @@ class AttendanceDetailTest extends TestCase
     {
         [$user, $record] = $this->createRecordWithBreak();
 
-        $response = $this->actingAs($user)->get('/attendance/' . $record->id);
+        $response = $this->actingAs($user)->get('/attendance/'.$record->id);
 
         $response->assertStatus(200);
         $response->assertSee('09:00');
@@ -74,7 +74,7 @@ class AttendanceDetailTest extends TestCase
     {
         [$user, $record] = $this->createRecordWithBreak();
 
-        $response = $this->actingAs($user)->get('/attendance/' . $record->id);
+        $response = $this->actingAs($user)->get('/attendance/'.$record->id);
 
         $response->assertStatus(200);
         $response->assertSee('12:00');

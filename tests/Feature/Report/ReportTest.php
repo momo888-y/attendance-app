@@ -74,7 +74,7 @@ class ReportTest extends TestCase
             'avg_work_minutes' => 534,
         ]);
 
-        $response->assertViewHas('monthlyTrend', fn($monthlyTrend) => $monthlyTrend->toArray() == [
+        $response->assertViewHas('monthlyTrend', fn ($monthlyTrend) => $monthlyTrend->toArray() == [
             ['month' => '2026/01', 'work_minutes' => 0, 'overtime_minutes' => 0],
             ['month' => '2026/02', 'work_minutes' => 0, 'overtime_minutes' => 0],
             ['month' => '2026/03', 'work_minutes' => 0, 'overtime_minutes' => 0],
@@ -104,7 +104,7 @@ class ReportTest extends TestCase
             'avg_work_minutes' => 0,
         ]);
 
-        $response->assertViewHas('monthlyTrend', fn($monthlyTrend) => $monthlyTrend->count() === 6
+        $response->assertViewHas('monthlyTrend', fn ($monthlyTrend) => $monthlyTrend->count() === 6
             && $monthlyTrend->sum('work_minutes') === 0
             && $monthlyTrend->sum('overtime_minutes') === 0);
 

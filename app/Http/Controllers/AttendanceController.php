@@ -11,8 +11,8 @@ use Carbon\CarbonPeriod;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
@@ -187,7 +187,7 @@ class AttendanceController extends Controller
      */
     private function formatBreaks(Collection $breaks): array
     {
-        return $breaks->map(fn($break) => [
+        return $breaks->map(fn ($break) => [
             'break_in' => Carbon::parse($break->break_in)->format('H:i'),
             'break_out' => $break->break_out ? Carbon::parse($break->break_out)->format('H:i') : '',
         ])->all();

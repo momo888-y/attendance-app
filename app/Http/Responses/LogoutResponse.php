@@ -3,6 +3,7 @@
 namespace App\Http\Responses;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Laravel\Fortify\Contracts\LogoutResponse as LogoutResponseContract;
 
 class LogoutResponse implements LogoutResponseContract
@@ -13,7 +14,7 @@ class LogoutResponse implements LogoutResponseContract
      *
      * 引数の型は、親インターフェースが型なしのため付けられない（付けるとエラーになる）
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      */
     public function toResponse($request): RedirectResponse
     {

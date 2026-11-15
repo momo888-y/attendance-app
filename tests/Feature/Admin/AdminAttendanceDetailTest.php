@@ -41,7 +41,7 @@ class AdminAttendanceDetailTest extends TestCase
             'break_out' => '13:00:00',
         ]);
 
-        $response = $this->actingAs($admin)->get('/attendance/' . $record->id);
+        $response = $this->actingAs($admin)->get('/attendance/'.$record->id);
 
         $response->assertStatus(200);
         $response->assertSee('スタッフE');
@@ -58,7 +58,7 @@ class AdminAttendanceDetailTest extends TestCase
         $user = $this->createUser();
         $record = $this->createRecord($user);
 
-        $response = $this->actingAs($admin)->post('/attendance/' . $record->id, [
+        $response = $this->actingAs($admin)->post('/attendance/'.$record->id, [
             'new_clock_in' => '19:00',
             'new_clock_out' => '18:00',
             'new_break_in' => [''],
@@ -75,7 +75,7 @@ class AdminAttendanceDetailTest extends TestCase
         $user = $this->createUser();
         $record = $this->createRecord($user);
 
-        $response = $this->actingAs($admin)->post('/attendance/' . $record->id, [
+        $response = $this->actingAs($admin)->post('/attendance/'.$record->id, [
             'new_clock_in' => '09:00',
             'new_clock_out' => '18:00',
             'new_break_in' => ['19:00'],
@@ -92,7 +92,7 @@ class AdminAttendanceDetailTest extends TestCase
         $user = $this->createUser();
         $record = $this->createRecord($user);
 
-        $response = $this->actingAs($admin)->post('/attendance/' . $record->id, [
+        $response = $this->actingAs($admin)->post('/attendance/'.$record->id, [
             'new_clock_in' => '09:00',
             'new_clock_out' => '18:00',
             'new_break_in' => ['12:00'],
@@ -109,7 +109,7 @@ class AdminAttendanceDetailTest extends TestCase
         $user = $this->createUser();
         $record = $this->createRecord($user);
 
-        $response = $this->actingAs($admin)->post('/attendance/' . $record->id, [
+        $response = $this->actingAs($admin)->post('/attendance/'.$record->id, [
             'new_clock_in' => '09:00',
             'new_clock_out' => '18:00',
             'new_break_in' => [''],

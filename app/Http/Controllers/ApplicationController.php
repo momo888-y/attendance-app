@@ -32,7 +32,7 @@ class ApplicationController extends Controller
         $formattedApplications = $user->applications()
             ->latest()
             ->get()
-            ->map(fn($application) => [
+            ->map(fn ($application) => [
                 'id' => $application->id,
                 'approval_status' => $application->approval_status,
                 'date' => $application->new_date->format('Y/m/d'),
@@ -54,12 +54,12 @@ class ApplicationController extends Controller
         if ($user->admin_status) {
             $record = $this->updateRecordDirectly($request, $id);
 
-            return redirect('/attendance/' . $record->id);
+            return redirect('/attendance/'.$record->id);
         }
 
         $record = $this->createApplication($request, $user, $id);
 
-        return redirect('/attendance/' . $record->id);
+        return redirect('/attendance/'.$record->id);
     }
 
     /**
@@ -69,7 +69,7 @@ class ApplicationController extends Controller
     {
         $application = Auth::user()->applications()->findOrFail($id);
 
-        return redirect('/attendance/' . $application->attendance_record_id);
+        return redirect('/attendance/'.$application->attendance_record_id);
     }
 
     /**
@@ -104,7 +104,7 @@ class ApplicationController extends Controller
         $record->breaks()->delete();
 
         $record->breaks()->createMany(
-            $application->proposalBreaks->map(fn($proposalBreak) => [
+            $application->proposalBreaks->map(fn ($proposalBreak) => [
                 'break_in' => $proposalBreak->break_in,
                 'break_out' => $proposalBreak->break_out,
             ])->all()
@@ -112,7 +112,7 @@ class ApplicationController extends Controller
 
         $application->update(['approval_status' => Application::STATUS_APPROVED]);
 
-        return redirect('/stamp_correction_request/approve/' . $application->id);
+        return redirect('/stamp_correction_request/approve/'.$application->id);
     }
 
     /**
@@ -165,9 +165,9 @@ class ApplicationController extends Controller
     {
         return collect($request->input('new_break_in', []))
             ->filter()
-            ->map(fn($breakIn, $index) => [
+            ->map(fn ($breakIn, $index) => [
                 'break_in' => $breakIn,
-                'break_out' => $request->input('new_break_out.' . $index),
+                'break_out' => $request->input('new_break_out.'.$index),
             ])
             ->values()
             ->all();

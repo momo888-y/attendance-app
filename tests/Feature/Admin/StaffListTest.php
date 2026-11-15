@@ -46,7 +46,7 @@ class StaffListTest extends TestCase
             'clock_out' => '18:00:00',
         ]);
 
-        $response = $this->actingAs($admin)->get('/admin/attendance/staff/' . $user->id);
+        $response = $this->actingAs($admin)->get('/admin/attendance/staff/'.$user->id);
 
         $response->assertStatus(200);
         $response->assertSee('スタッフH');
@@ -66,10 +66,10 @@ class StaffListTest extends TestCase
             'clock_out' => '18:00:00',
         ]);
 
-        $index = $this->actingAs($admin)->get('/admin/attendance/staff/' . $user->id);
+        $index = $this->actingAs($admin)->get('/admin/attendance/staff/'.$user->id);
         $index->assertSee('前月');
 
-        $response = $this->actingAs($admin)->get('/admin/attendance/staff/' . $user->id . '?date=' . $previousMonth->format('Y-m'));
+        $response = $this->actingAs($admin)->get('/admin/attendance/staff/'.$user->id.'?date='.$previousMonth->format('Y-m'));
 
         $response->assertStatus(200);
         $response->assertSee($previousMonth->format('Y/m'));
@@ -88,10 +88,10 @@ class StaffListTest extends TestCase
             'clock_out' => '18:00:00',
         ]);
 
-        $index = $this->actingAs($admin)->get('/admin/attendance/staff/' . $user->id);
+        $index = $this->actingAs($admin)->get('/admin/attendance/staff/'.$user->id);
         $index->assertSee('翌月');
 
-        $response = $this->actingAs($admin)->get('/admin/attendance/staff/' . $user->id . '?date=' . $nextMonth->format('Y-m'));
+        $response = $this->actingAs($admin)->get('/admin/attendance/staff/'.$user->id.'?date='.$nextMonth->format('Y-m'));
 
         $response->assertStatus(200);
         $response->assertSee($nextMonth->format('Y/m'));
@@ -109,10 +109,10 @@ class StaffListTest extends TestCase
             'clock_out' => '18:00:00',
         ]);
 
-        $list = $this->actingAs($admin)->get('/admin/attendance/staff/' . $user->id);
-        $list->assertSee('/attendance/' . $record->id, false);
+        $list = $this->actingAs($admin)->get('/admin/attendance/staff/'.$user->id);
+        $list->assertSee('/attendance/'.$record->id, false);
 
-        $response = $this->actingAs($admin)->get('/attendance/' . $record->id);
+        $response = $this->actingAs($admin)->get('/attendance/'.$record->id);
 
         $response->assertStatus(200);
     }

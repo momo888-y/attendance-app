@@ -24,9 +24,9 @@ class AttendanceRecordController extends Controller
     public function index(IndexAttendanceRecordRequest $request): AnonymousResourceCollection
     {
         $attendanceRecords = AttendanceRecord::with(['user', 'breaks'])
-            ->when($request->input('user_id'), fn($query, $userId) => $query->where('user_id', $userId))
-            ->when($request->input('date'), fn($query, $date) => $query->where('date', $date))
-            ->when($request->input('month'), fn($query, $month) => $query->whereBetween('date', [
+            ->when($request->input('user_id'), fn ($query, $userId) => $query->where('user_id', $userId))
+            ->when($request->input('date'), fn ($query, $date) => $query->where('date', $date))
+            ->when($request->input('month'), fn ($query, $month) => $query->whereBetween('date', [
                 Carbon::parse($month)->startOfMonth()->toDateString(),
                 Carbon::parse($month)->endOfMonth()->toDateString(),
             ]))

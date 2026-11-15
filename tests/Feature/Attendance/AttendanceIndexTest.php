@@ -21,7 +21,7 @@ class AttendanceIndexTest extends TestCase
         $this->travelTo(Carbon::create(2026, 6, 10, 9, 0, 0));
     }
 
-    public function test_現在の日時情報がUIと同じ形式で出力されている(): void
+    public function test_現在の日時情報が_u_iと同じ形式で出力されている(): void
     {
         $user = User::factory()->create(['password' => bcrypt('password')]);
 

@@ -11,7 +11,7 @@ class AdminMiddleware
     /**
      * 管理者だけを通す。一般ユーザーは打刻画面へリダイレクトする
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {

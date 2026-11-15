@@ -66,7 +66,7 @@ class AdminAttendanceController extends Controller
         $date = Carbon::parse($request->input('year_month'))->startOfMonth();
 
         $rows = $this->formatMonthlyRecords($user, $date);
-        $fileName = $user->name . '_' . $date->format('Y-m') . '.csv';
+        $fileName = $user->name.'_'.$date->format('Y-m').'.csv';
 
         return response()->streamDownload(function () use ($rows) {
             $handle = fopen('php://output', 'w');
@@ -76,7 +76,7 @@ class AdminAttendanceController extends Controller
 
             fputcsv($handle, ['日付', '出勤', '退勤', '休憩', '合計']);
 
-            $rows->each(fn($row) => fputcsv($handle, [
+            $rows->each(fn ($row) => fputcsv($handle, [
                 $row['date'],
                 $row['clock_in'],
                 $row['clock_out'],

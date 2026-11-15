@@ -54,7 +54,7 @@ class ReportController extends Controller
 
         return [
             'total_work_minutes' => $totalWorkMinutes,
-            'total_overtime_minutes' => $records->sum(fn($record) => $this->overtimeMinutes($record)),
+            'total_overtime_minutes' => $records->sum(fn ($record) => $this->overtimeMinutes($record)),
             'avg_work_minutes' => $records->isEmpty() ? 0 : intdiv($totalWorkMinutes, $records->count()),
         ];
     }
@@ -64,7 +64,7 @@ class ReportController extends Controller
      */
     private function makeMonthlyTrend(Collection $records, Carbon $startMonth): Collection
     {
-        $recordsByMonth = $records->groupBy(fn($record) => Carbon::parse($record->date)->format('Y/m'));
+        $recordsByMonth = $records->groupBy(fn ($record) => Carbon::parse($record->date)->format('Y/m'));
 
         return collect(range(0, self::MONTHS - 1))
             ->map(function ($offset) use ($startMonth, $recordsByMonth) {
@@ -74,7 +74,7 @@ class ReportController extends Controller
                 return [
                     'month' => $month,
                     'work_minutes' => $monthRecords->sum('work_minutes'),
-                    'overtime_minutes' => $monthRecords->sum(fn($record) => $this->overtimeMinutes($record)),
+                    'overtime_minutes' => $monthRecords->sum(fn ($record) => $this->overtimeMinutes($record)),
                 ];
             });
     }
@@ -84,12 +84,12 @@ class ReportController extends Controller
      */
     private function makeAnomalies(Collection $records): array
     {
-        $thisMonthRecords = $records->filter(fn($record) => Carbon::parse($record->date)->isSameMonth(now()));
+        $thisMonthRecords = $records->filter(fn ($record) => Carbon::parse($record->date)->isSameMonth(now()));
 
         return [
-            'late_count' => $thisMonthRecords->filter(fn($record) => $record->clock_in > self::START_TIME)->count(),
-            'early_leave_count' => $thisMonthRecords->filter(fn($record) => $record->clock_out < self::END_TIME)->count(),
-            'long_work_count' => $thisMonthRecords->filter(fn($record) => $record->work_minutes > self::LONG_WORK_MINUTES)->count(),
+            'late_count' => $thisMonthRecords->filter(fn ($record) => $record->clock_in > self::START_TIME)->count(),
+            'early_leave_count' => $thisMonthRecords->filter(fn ($record) => $record->clock_out < self::END_TIME)->count(),
+            'long_work_count' => $thisMonthRecords->filter(fn ($record) => $record->work_minutes > self::LONG_WORK_MINUTES)->count(),
         ];
     }
 

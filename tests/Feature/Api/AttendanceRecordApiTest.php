@@ -36,7 +36,7 @@ class AttendanceRecordApiTest extends TestCase
 
     // ===== ID 17：読み取り系 =====
 
-    public function test_勤怠一覧がJSONで取得できる(): void
+    public function test_勤怠一覧が_jso_nで取得できる(): void
     {
         $user = $this->createUser();
         $this->createRecord($user, '2026-05-01');
@@ -52,12 +52,12 @@ class AttendanceRecordApiTest extends TestCase
         ]);
     }
 
-    public function test_勤怠詳細がJSONで取得できる(): void
+    public function test_勤怠詳細が_jso_nで取得できる(): void
     {
         $user = $this->createUser(['name' => 'APIテスト太郎']);
         $record = $this->createRecord($user);
 
-        $response = $this->getJson('/api/v1/attendance-records/' . $record->id);
+        $response = $this->getJson('/api/v1/attendance-records/'.$record->id);
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.id', $record->id);
@@ -66,7 +66,7 @@ class AttendanceRecordApiTest extends TestCase
         $response->assertJsonPath('data.applications', []);
     }
 
-    public function test_存在しないIDでは404とエラーJSONが返る(): void
+    public function test_存在しない_i_dでは404とエラー_jso_nが返る(): void
     {
         $response = $this->getJson('/api/v1/attendance-records/99999');
 
@@ -76,7 +76,7 @@ class AttendanceRecordApiTest extends TestCase
 
     // ===== ID 18：書き込み系 =====
 
-    public function test_POSTで勤怠が作成される(): void
+    public function test_pos_tで勤怠が作成される(): void
     {
         $user = $this->createUser();
         Sanctum::actingAs($user, ['*']);
@@ -108,13 +108,13 @@ class AttendanceRecordApiTest extends TestCase
         $response->assertJsonPath('errors.clock_in.0', '出勤時刻は HH:MM:SS 形式で指定してください。');
     }
 
-    public function test_PUTで勤怠が更新され、存在しないIDでは404が返る(): void
+    public function test_pu_tで勤怠が更新され、存在しない_i_dでは404が返る(): void
     {
         $user = $this->createUser();
         $record = $this->createRecord($user);
         Sanctum::actingAs($user, ['*']);
 
-        $response = $this->putJson('/api/v1/attendance-records/' . $record->id, [
+        $response = $this->putJson('/api/v1/attendance-records/'.$record->id, [
             'clock_out' => '19:00:00',
         ]);
 
@@ -129,13 +129,13 @@ class AttendanceRecordApiTest extends TestCase
             ->assertStatus(404);
     }
 
-    public function test_DELETEで勤怠が削除され、存在しないIDでは404が返る(): void
+    public function test_delet_eで勤怠が削除され、存在しない_i_dでは404が返る(): void
     {
         $user = $this->createUser();
         $record = $this->createRecord($user);
         Sanctum::actingAs($user, ['*']);
 
-        $response = $this->deleteJson('/api/v1/attendance-records/' . $record->id);
+        $response = $this->deleteJson('/api/v1/attendance-records/'.$record->id);
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('attendance_records', ['id' => $record->id]);
@@ -146,7 +146,7 @@ class AttendanceRecordApiTest extends TestCase
 
     // ===== ID 19：Sanctum 認証と認可 =====
 
-    public function test_未認証時に書き込み系APIで401が返る(): void
+    public function test_未認証時に書き込み系_ap_iで401が返る(): void
     {
         $record = $this->createRecord($this->createUser());
 
@@ -154,11 +154,11 @@ class AttendanceRecordApiTest extends TestCase
             ->assertStatus(401)
             ->assertExactJson(['message' => 'Unauthenticated.']);
 
-        $this->putJson('/api/v1/attendance-records/' . $record->id, [])
+        $this->putJson('/api/v1/attendance-records/'.$record->id, [])
             ->assertStatus(401)
             ->assertExactJson(['message' => 'Unauthenticated.']);
 
-        $this->deleteJson('/api/v1/attendance-records/' . $record->id)
+        $this->deleteJson('/api/v1/attendance-records/'.$record->id)
             ->assertStatus(401)
             ->assertExactJson(['message' => 'Unauthenticated.']);
     }
@@ -170,11 +170,11 @@ class AttendanceRecordApiTest extends TestCase
         $record = $this->createRecord($owner);
         Sanctum::actingAs($otherUser, ['*']);
 
-        $this->putJson('/api/v1/attendance-records/' . $record->id, ['clock_out' => '19:00:00'])
+        $this->putJson('/api/v1/attendance-records/'.$record->id, ['clock_out' => '19:00:00'])
             ->assertStatus(403)
             ->assertExactJson(['error' => 'この操作を実行する権限がありません。']);
 
-        $this->deleteJson('/api/v1/attendance-records/' . $record->id)
+        $this->deleteJson('/api/v1/attendance-records/'.$record->id)
             ->assertStatus(403)
             ->assertExactJson(['error' => 'この操作を実行する権限がありません。']);
     }
@@ -186,7 +186,7 @@ class AttendanceRecordApiTest extends TestCase
         $record = $this->createRecord($owner);
         Sanctum::actingAs($admin, ['*']);
 
-        $this->putJson('/api/v1/attendance-records/' . $record->id, ['clock_out' => '19:00:00'])
+        $this->putJson('/api/v1/attendance-records/'.$record->id, ['clock_out' => '19:00:00'])
             ->assertStatus(200);
     }
 }

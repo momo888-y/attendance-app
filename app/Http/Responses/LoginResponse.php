@@ -3,6 +3,7 @@
 namespace App\Http\Responses;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 
 class LoginResponse implements LoginResponseContract
@@ -13,7 +14,7 @@ class LoginResponse implements LoginResponseContract
      *
      * 引数の型は、親インターフェースが型なしのため付けられない（付けるとエラーになる）
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      */
     public function toResponse($request): RedirectResponse
     {
