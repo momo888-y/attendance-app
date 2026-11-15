@@ -16,6 +16,8 @@ class ApplicationController extends Controller
     /**
      * 修正申請の一覧を表示する
      * 管理者なら全員分、一般ユーザーなら自分の申請だけを表示する
+     *
+     * @return View 申請一覧画面（管理者用または一般ユーザー用）
      */
     public function index(): View
     {
@@ -46,6 +48,10 @@ class ApplicationController extends Controller
     /**
      * 勤怠の修正を受け付ける
      * 管理者なら勤怠記録をその場で直接書き換え、一般ユーザーなら修正申請を作成する
+     *
+     * @param  ApplicationRequest  $request  修正内容（出勤・退勤・休憩・備考）
+     * @param  string  $id  勤怠記録の ID
+     * @return RedirectResponse 勤怠詳細画面へのリダイレクト
      */
     public function store(ApplicationRequest $request, string $id): RedirectResponse
     {
@@ -64,6 +70,9 @@ class ApplicationController extends Controller
 
     /**
      * 一般ユーザー用：申請に対応する勤怠詳細画面へリダイレクトする
+     *
+     * @param  string  $id  修正申請の ID
+     * @return RedirectResponse 勤怠詳細画面へのリダイレクト
      */
     public function show(string $id): RedirectResponse
     {
@@ -74,6 +83,9 @@ class ApplicationController extends Controller
 
     /**
      * 管理者用：修正申請の承認画面を表示する
+     *
+     * @param  string  $attendanceCorrectRequestId  修正申請の ID
+     * @return View 修正申請承認画面
      */
     public function approveShow(string $attendanceCorrectRequestId): View
     {
@@ -87,6 +99,9 @@ class ApplicationController extends Controller
 
     /**
      * 管理者用：修正申請を承認し、申請内容で勤怠記録と休憩を上書きする
+     *
+     * @param  string  $attendanceCorrectRequestId  修正申請の ID
+     * @return RedirectResponse 修正申請承認画面へのリダイレクト
      */
     public function approve(string $attendanceCorrectRequestId): RedirectResponse
     {
@@ -117,6 +132,10 @@ class ApplicationController extends Controller
 
     /**
      * 管理者用：フォームの内容で勤怠記録と休憩を直接書き換える
+     *
+     * @param  ApplicationRequest  $request  修正内容（出勤・退勤・休憩・備考）
+     * @param  string  $id  勤怠記録の ID
+     * @return AttendanceRecord 更新した勤怠記録
      */
     private function updateRecordDirectly(ApplicationRequest $request, string $id): AttendanceRecord
     {
@@ -137,7 +156,11 @@ class ApplicationController extends Controller
 
     /**
      * 一般ユーザー用：フォームの内容で修正申請（と休憩の修正案）を作成する
-     * 対象の勤怠記録を返す
+     *
+     * @param  ApplicationRequest  $request  修正内容（出勤・退勤・休憩・備考）
+     * @param  User  $user  ログイン中のユーザー
+     * @param  string  $id  勤怠記録の ID
+     * @return AttendanceRecord 修正対象の勤怠記録
      */
     private function createApplication(ApplicationRequest $request, User $user, string $id): AttendanceRecord
     {
@@ -160,6 +183,9 @@ class ApplicationController extends Controller
 
     /**
      * フォームで入力された休憩のうち、開始時刻があるものだけを保存用の形にそろえる
+     *
+     * @param  ApplicationRequest  $request  休憩（new_break_in・new_break_out）を含むリクエスト
+     * @return array 休憩ごとの break_in・break_out の配列
      */
     private function formatInputBreaks(ApplicationRequest $request): array
     {

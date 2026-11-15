@@ -8,7 +8,9 @@ use Illuminate\Validation\Rule;
 class UpdateAttendanceRecordRequest extends FormRequest
 {
     /**
-     * だれが更新できるかは Policy で決めるので、ここでは通す
+     * このリクエストを許可するかどうか（更新できる人の判定は Policy で行うため常に許可）
+     *
+     * @return bool 常に true
      */
     public function authorize(): bool
     {
@@ -16,7 +18,9 @@ class UpdateAttendanceRecordRequest extends FormRequest
     }
 
     /**
-     * 更新する勤怠のチェック（送られてきた項目だけチェックする）
+     * 更新する勤怠のバリデーションルールを返す（送られてきた項目だけチェックする）
+     *
+     * @return array<string, array<int, mixed>>
      */
     public function rules(): array
     {
@@ -49,7 +53,9 @@ class UpdateAttendanceRecordRequest extends FormRequest
     }
 
     /**
-     * 日本語のエラーメッセージ（FN060 と同じ）
+     * バリデーションエラー時の日本語メッセージを返す（FN060）
+     *
+     * @return array<string, string>
      */
     public function messages(): array
     {

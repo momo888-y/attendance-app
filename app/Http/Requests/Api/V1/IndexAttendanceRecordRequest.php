@@ -7,7 +7,9 @@ use Illuminate\Foundation\Http\FormRequest;
 class IndexAttendanceRecordRequest extends FormRequest
 {
     /**
-     * だれでも一覧を取れる
+     * このリクエストを許可するかどうか（一覧取得は認証不要のため常に許可）
+     *
+     * @return bool 常に true
      */
     public function authorize(): bool
     {
@@ -15,7 +17,9 @@ class IndexAttendanceRecordRequest extends FormRequest
     }
 
     /**
-     * 一覧の絞り込み・ページの指定のチェック（どれも送らなくてよい）
+     * 一覧の絞り込み・ページ指定のバリデーションルールを返す（どれも任意）
+     *
+     * @return array<string, array<int, string>>
      */
     public function rules(): array
     {

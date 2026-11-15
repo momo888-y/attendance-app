@@ -27,6 +27,8 @@ class ReportController extends Controller
 
     /**
      * ログインユーザーの、過去6ヶ月の勤怠レポートを表示する
+     *
+     * @return View 勤怠レポート画面
      */
     public function index(): View
     {
@@ -47,6 +49,9 @@ class ReportController extends Controller
 
     /**
      * 基本サマリー（総労働時間・総残業時間・1日あたりの平均労働時間）を作る
+     *
+     * @param  Collection  $records  集計対象の勤怠記録
+     * @return array total_work_minutes・total_overtime_minutes・avg_work_minutes（すべて分）
      */
     private function makeSummary(Collection $records): array
     {
@@ -61,6 +66,10 @@ class ReportController extends Controller
 
     /**
      * 月次推移（月ごとの労働時間と残業時間）を作る。データがない月は 0
+     *
+     * @param  Collection  $records  集計対象の勤怠記録
+     * @param  Carbon  $startMonth  集計を始める月の1日
+     * @return Collection 月ごとの month・work_minutes・overtime_minutes のコレクション
      */
     private function makeMonthlyTrend(Collection $records, Carbon $startMonth): Collection
     {
@@ -81,6 +90,9 @@ class ReportController extends Controller
 
     /**
      * 今月の異常検知（遅刻・早退・長時間労働の回数）を作る
+     *
+     * @param  Collection  $records  集計対象の勤怠記録
+     * @return array late_count・early_leave_count・long_work_count
      */
     private function makeAnomalies(Collection $records): array
     {
@@ -94,7 +106,10 @@ class ReportController extends Controller
     }
 
     /**
-     * 1日の残業時間（分）。所定の8時間を超えた分。超えていなければ 0
+     * 1日の残業時間（分）を返す。所定の8時間を超えた分で、超えていなければ 0
+     *
+     * @param  AttendanceRecord  $record  勤怠記録
+     * @return int 残業時間（分）
      */
     private function overtimeMinutes(AttendanceRecord $record): int
     {

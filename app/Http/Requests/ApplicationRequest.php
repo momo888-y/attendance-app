@@ -8,6 +8,8 @@ class ApplicationRequest extends FormRequest
 {
     /**
      * このリクエストを許可するかどうか（ログイン確認はルートのミドルウェアで行うため常に許可）
+     *
+     * @return bool 常に true
      */
     public function authorize(): bool
     {

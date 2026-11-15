@@ -18,6 +18,8 @@ class AttendanceController extends Controller
 {
     /**
      * 打刻画面を表示する（今日の日付と現在時刻を渡す）
+     *
+     * @return View 打刻画面
      */
     public function index(): View
     {
@@ -30,6 +32,9 @@ class AttendanceController extends Controller
 
     /**
      * 打刻する（出勤・休憩入・休憩戻・退勤のどれかを action で受け取る）
+     *
+     * @param  Request  $request  打刻の種類（action）を含むリクエスト
+     * @return RedirectResponse 打刻画面へのリダイレクト
      */
     public function store(Request $request): RedirectResponse
     {
@@ -76,6 +81,9 @@ class AttendanceController extends Controller
 
     /**
      * 一般ユーザー用：指定した月（未指定なら今月）の自分の勤怠一覧を表示する
+     *
+     * @param  Request  $request  表示する月（date：Y-m 形式）を含むリクエスト
+     * @return View 勤怠一覧画面
      */
     public function list(Request $request): View
     {
@@ -111,6 +119,9 @@ class AttendanceController extends Controller
     /**
      * 勤怠詳細画面を表示する
      * 管理者なら誰の勤怠でも、一般ユーザーなら自分の勤怠だけを表示する
+     *
+     * @param  string  $id  勤怠記録の ID
+     * @return View 勤怠詳細画面（管理者用または一般ユーザー用）
      */
     public function show(string $id): View
     {
@@ -125,6 +136,9 @@ class AttendanceController extends Controller
 
     /**
      * 管理者用：勤怠記録の内容をそのまま詳細画面に表示する
+     *
+     * @param  string  $id  勤怠記録の ID
+     * @return View 管理者用の勤怠詳細画面
      */
     private function showForAdmin(string $id): View
     {
@@ -150,6 +164,10 @@ class AttendanceController extends Controller
     /**
      * 一般ユーザー用：自分の勤怠詳細を表示する
      * 承認待ちの申請があれば、勤怠記録ではなく申請中の内容を表示する
+     *
+     * @param  User  $user  ログイン中のユーザー
+     * @param  string  $id  勤怠記録の ID
+     * @return View 一般ユーザー用の勤怠詳細画面
      */
     private function showForUser(User $user, string $id): View
     {
@@ -184,6 +202,9 @@ class AttendanceController extends Controller
 
     /**
      * 休憩（breaks または proposal_breaks）を、詳細画面で使う「開始・終了」の形にそろえる
+     *
+     * @param  Collection  $breaks  休憩のコレクション
+     * @return array 休憩ごとの break_in・break_out（H:i 形式）の配列
      */
     private function formatBreaks(Collection $breaks): array
     {

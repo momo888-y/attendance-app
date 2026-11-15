@@ -20,6 +20,8 @@ class AttendanceBreak extends Model
 
     /**
      * この休憩が属する勤怠記録を取得する
+     *
+     * @return BelongsTo 勤怠記録とのリレーション
      */
     public function attendanceRecord(): BelongsTo
     {

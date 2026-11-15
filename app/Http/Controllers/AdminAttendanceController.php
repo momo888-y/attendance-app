@@ -15,6 +15,9 @@ class AdminAttendanceController extends Controller
 {
     /**
      * 管理者用：指定した日（未指定なら今日）の全スタッフの勤怠一覧を表示する
+     *
+     * @param  Request  $request  表示する日付（date：Y-m-d 形式）を含むリクエスト
+     * @return View 管理者用の勤怠一覧画面
      */
     public function index(Request $request): View
     {
@@ -33,6 +36,8 @@ class AdminAttendanceController extends Controller
 
     /**
      * 管理者用：スタッフ（一般ユーザー）の一覧を表示する
+     *
+     * @return View スタッフ一覧画面
      */
     public function staffList(): View
     {
@@ -43,6 +48,10 @@ class AdminAttendanceController extends Controller
 
     /**
      * 管理者用：指定したスタッフの、指定した月（未指定なら今月）の勤怠一覧を表示する
+     *
+     * @param  Request  $request  表示する月（date：Y-m 形式）を含むリクエスト
+     * @param  string  $id  スタッフ（ユーザー）の ID
+     * @return View スタッフ別の勤怠一覧画面
      */
     public function staffAttendance(Request $request, string $id): View
     {
@@ -59,6 +68,9 @@ class AdminAttendanceController extends Controller
 
     /**
      * 管理者用：指定したスタッフの、指定した月の勤怠を CSV でダウンロードする
+     *
+     * @param  Request  $request  スタッフの ID（user_id）と月（year_month）を含むリクエスト
+     * @return StreamedResponse CSV ファイルのダウンロード
      */
     public function export(Request $request): StreamedResponse
     {
@@ -90,6 +102,10 @@ class AdminAttendanceController extends Controller
 
     /**
      * スタッフの1か月分の勤怠を、1日1行の形にそろえる（画面と CSV で共通）
+     *
+     * @param  User  $user  対象のスタッフ
+     * @param  Carbon  $date  対象の月の1日
+     * @return Collection 1日ごとの日付・出勤・退勤・休憩・合計のコレクション
      */
     private function formatMonthlyRecords(User $user, Carbon $date): Collection
     {

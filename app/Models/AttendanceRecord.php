@@ -22,6 +22,8 @@ class AttendanceRecord extends Model
 
     /**
      * この勤怠記録のユーザーを取得する
+     *
+     * @return BelongsTo ユーザーとのリレーション
      */
     public function user(): BelongsTo
     {
@@ -30,6 +32,8 @@ class AttendanceRecord extends Model
 
     /**
      * この勤怠記録の休憩一覧を取得する
+     *
+     * @return HasMany 休憩とのリレーション
      */
     public function breaks(): HasMany
     {
@@ -38,6 +42,8 @@ class AttendanceRecord extends Model
 
     /**
      * この勤怠記録に対する修正申請一覧を取得する
+     *
+     * @return HasMany 修正申請とのリレーション
      */
     public function applications(): HasMany
     {
@@ -46,6 +52,8 @@ class AttendanceRecord extends Model
 
     /**
      * 休憩時間の合計を「分」で返す（終了していない休憩は数えない）
+     *
+     * @return int 休憩時間の合計（分）
      */
     public function getBreakMinutesAttribute(): int
     {
@@ -56,7 +64,8 @@ class AttendanceRecord extends Model
 
     /**
      * 労働時間（出勤〜退勤から休憩を引いた時間）を「分」で返す
-     * まだ退勤していない場合は null を返す
+     *
+     * @return int|null 労働時間（分）。まだ退勤していない場合は null
      */
     public function getWorkMinutesAttribute(): ?int
     {
@@ -69,6 +78,8 @@ class AttendanceRecord extends Model
 
     /**
      * 休憩時間の合計を「HH:MM」形式で返す
+     *
+     * @return string HH:MM 形式の休憩時間
      */
     public function getTotalBreakTimeAttribute(): string
     {
@@ -76,7 +87,9 @@ class AttendanceRecord extends Model
     }
 
     /**
-     * 労働時間を「HH:MM」形式で返す（まだ退勤していない場合は null）
+     * 労働時間を「HH:MM」形式で返す
+     *
+     * @return string|null HH:MM 形式の労働時間。まだ退勤していない場合は null
      */
     public function getTotalTimeAttribute(): ?string
     {
@@ -89,6 +102,9 @@ class AttendanceRecord extends Model
 
     /**
      * 分を「HH:MM」形式の文字にする
+     *
+     * @param  int  $minutes  分
+     * @return string HH:MM 形式の文字
      */
     private function formatMinutes(int $minutes): string
     {

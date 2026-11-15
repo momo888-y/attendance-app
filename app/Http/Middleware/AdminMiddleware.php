@@ -11,7 +11,9 @@ class AdminMiddleware
     /**
      * 管理者だけを通す。一般ユーザーは打刻画面へリダイレクトする
      *
-     * @param  Closure(Request): (Response)  $next
+     * @param  Request  $request  リクエスト
+     * @param  Closure(Request): (Response)  $next  次の処理
+     * @return Response 次の処理のレスポンス、または打刻画面へのリダイレクト
      */
     public function handle(Request $request, Closure $next): Response
     {

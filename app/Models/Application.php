@@ -35,6 +35,8 @@ class Application extends Model
 
     /**
      * 申請したユーザーを取得する
+     *
+     * @return BelongsTo 申請したユーザーとのリレーション
      */
     public function user(): BelongsTo
     {
@@ -44,6 +46,8 @@ class Application extends Model
     /**
      * 修正対象の勤怠記録を取得する
      * （Blade から $application->AttendanceRecord で参照しているため、メソッド名は変更しない）
+     *
+     * @return BelongsTo 勤怠記録とのリレーション
      */
     public function AttendanceRecord(): BelongsTo
     {
@@ -52,6 +56,8 @@ class Application extends Model
 
     /**
      * 申請に含まれる修正後の休憩時間を取得する
+     *
+     * @return HasMany 休憩の修正案とのリレーション
      */
     public function proposalBreaks(): HasMany
     {
@@ -60,6 +66,9 @@ class Application extends Model
 
     /**
      * 修正後の出勤時刻を「H:i」形式で返す
+     *
+     * @param  string|null  $value  データベースに保存されている時刻
+     * @return string|null H:i 形式の時刻（未入力なら null）
      */
     public function getNewClockInAttribute(?string $value): ?string
     {
@@ -68,6 +77,9 @@ class Application extends Model
 
     /**
      * 修正後の退勤時刻を「H:i」形式で返す
+     *
+     * @param  string|null  $value  データベースに保存されている時刻
+     * @return string|null H:i 形式の時刻（未入力なら null）
      */
     public function getNewClockOutAttribute(?string $value): ?string
     {

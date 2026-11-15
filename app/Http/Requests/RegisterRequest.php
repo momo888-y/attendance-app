@@ -8,7 +8,9 @@ use Illuminate\Foundation\Http\FormRequest;
 class RegisterRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * このリクエストを許可するかどうか（会員登録前のフォームのため常に許可）
+     *
+     * @return bool 常に true
      */
     public function authorize(): bool
     {
@@ -16,7 +18,7 @@ class RegisterRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * 会員登録フォームのバリデーションルールを返す
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */

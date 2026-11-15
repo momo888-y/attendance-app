@@ -47,6 +47,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * このユーザーが出した修正申請一覧を取得する
+     *
+     * @return HasMany 修正申請とのリレーション
      */
     public function applications(): HasMany
     {
@@ -55,6 +57,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * このユーザーの勤怠記録一覧を取得する
+     *
+     * @return HasMany 勤怠記録とのリレーション
      */
     public function attendanceRecords(): HasMany
     {
@@ -62,7 +66,9 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * 今日の勤務状態（勤務外・出勤中・休憩中・退勤済）を返す
+     * 今日の勤務状態を返す
+     *
+     * @return string 勤務外・出勤中・休憩中・退勤済 のどれか
      */
     public function getAttendanceStatusAttribute(): string
     {

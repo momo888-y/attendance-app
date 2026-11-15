@@ -8,7 +8,9 @@ use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 class LoginRequest extends FortifyLoginRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * このリクエストを許可するかどうか（ログイン前のフォームのため常に許可）
+     *
+     * @return bool 常に true
      */
     public function authorize(): bool
     {
@@ -16,7 +18,7 @@ class LoginRequest extends FortifyLoginRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * ログインフォームのバリデーションルールを返す
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */

@@ -8,7 +8,9 @@ use Illuminate\Validation\Rule;
 class StoreAttendanceRecordRequest extends FormRequest
 {
     /**
-     * トークンの門を通った人なら登録できる
+     * このリクエストを許可するかどうか（認証はルートの auth:sanctum で行うため常に許可）
+     *
+     * @return bool 常に true
      */
     public function authorize(): bool
     {
@@ -16,7 +18,9 @@ class StoreAttendanceRecordRequest extends FormRequest
     }
 
     /**
-     * 登録する勤怠のチェック
+     * 登録する勤怠のバリデーションルールを返す
+     *
+     * @return array<string, array<int, mixed>>
      */
     public function rules(): array
     {
@@ -33,7 +37,9 @@ class StoreAttendanceRecordRequest extends FormRequest
     }
 
     /**
-     * 日本語のエラーメッセージ（FN060）
+     * バリデーションエラー時の日本語メッセージを返す（FN060）
+     *
+     * @return array<string, string>
      */
     public function messages(): array
     {
