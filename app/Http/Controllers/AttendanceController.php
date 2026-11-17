@@ -16,6 +16,14 @@ use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
+    /** 今のステータスで受け付ける打刻の種類 */
+    private const ALLOWED_ACTIONS = [
+        '勤務外' => ['clock_in'],
+        '出勤中' => ['break_in', 'clock_out'],
+        '休憩中' => ['break_out'],
+        '退勤済' => [],
+    ];
+
     /**
      * 打刻画面を表示する（今日の日付と現在時刻を渡す）
      *
@@ -32,6 +40,7 @@ class AttendanceController extends Controller
 
     /**
      * 打刻する（出勤・休憩入・休憩戻・退勤のどれかを action で受け取る）
+     * 今のステータスで押せない打刻が送られてきた場合は、何もせずに打刻画面へ戻す
      *
      * @param  Request  $request  打刻の種類（action）を含むリクエスト
      * @return RedirectResponse 打刻画面へのリダイレクト
@@ -40,6 +49,10 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
         $action = $request->input('action');
+
+        if (! in_array($action, self::ALLOWED_ACTIONS[$user->attendance_status], true)) {
+            return redirect('/attendance');
+        }
 
         if ($action === 'clock_in') {
             AttendanceRecord::create([
